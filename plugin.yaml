@@ -1,19 +1,26 @@
-name: ask-stacker-name-plugin
+name: ask-stacker-name
 description: Plugin to add capacity to hello stacker app to ask stacker name before say hello
 types:
   - app
-inputs:
-  - label: Input Example
-    type: text
-    name: example
-    default: any text
-  - label: Example of number
-    type: int
-    name: any_number
-    default: "10"
-  - label: Example of list
-    type: multiselect
-    name: any_list
-    items:
-      - item1
-      - item2
+hooks:
+  - type: edit
+    trigger: after-render
+    path: main.py
+    changes:
+      - insert:
+          line: 0
+          value: "import sys\n\n"
+          when:
+            not-exists: import sys
+      - search:
+          string: "def say_hello():"
+          insert-after:
+            snippet: snippets/ask_name_snippet
+          when:
+            not-exists: print("What is you name stacker?")
+      - search:
+          string: "Stacker!"
+          replace-by:
+            value: "{name}!" 
+          when:
+            not-exists: "{name}!"
